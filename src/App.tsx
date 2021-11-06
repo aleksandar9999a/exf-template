@@ -1,15 +1,22 @@
-import ExF, { Component, CustomElement } from 'exf-ts';
+import ExF, { Element } from 'exf-ts/lib/element';
+import Service from './service';
 
-@CustomElement({
-	selector: 'exf-app'
-})
-export class App extends Component {
+export default (element: Element, dep: { service: () => Promise<Service>}) => {
+  const counter = element.observe(0)
 
-	render() {
-		return (
-			<div>
-				<h1>ExF</h1>
-			</div>
-		)
-	}
+  const interval = setInterval(() => {
+    counter.value++
+  }, 1000)
+
+  element.onUnmount(() => {
+    clearInterval(interval)
+  })
+
+  return () => {
+    return (
+      <div className="bg-red">
+        <div>{counter}</div>
+      </div>
+    )
+  }
 }

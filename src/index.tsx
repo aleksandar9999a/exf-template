@@ -1,14 +1,35 @@
-import 'core-js';
-import { ExFModule } from 'exf-ts';
-import { App } from './App';
+import { createRuntime } from 'exf-ts'
 
-ExFModule({
-	components: [
-		App
-	],
-	bootstraps: [
-		App
-	],
-	root: 'root'
+const runtime = createRuntime()
+
+/* We pass rules to runtime so platforms which pass that rules will be mounted */ 
+const rules = {}
+
+runtime.createPlatform({
+  name: 'ex',
+  providers: {
+    service: {
+      type: 'singleton',
+      value: () => import('./service')
+    }
+  },
+  components: [
+    { tag: 'app', element: () => import('./App') }
+  ],
+  bootstrap: {
+    element: 'app',
+    container: 'body'
+  },
+  global: {
+    style: `
+      .bg-red {
+        background: red;
+      }
+    `
+  },
+  conditions (rules) {
+    return true
+  }
 })
 
+runtime.run(rules)
